@@ -17,7 +17,7 @@ class Controller
     final public function getAuthorization(): void
     {
         $debug = Request::getQueryParameter('debug');
-        update_option('open_oauth_debug', true === $debug);
+        update_option('open_oauth_debug', true === (bool) $debug);
 
         Client::getAuthorization();
     }
@@ -63,7 +63,7 @@ class Controller
             exit($userInfo['error']);
         }
 
-        if (get_option('open_oauth_debug')) {
+        if ('1' === get_option('open_oauth_debug')) {
             echo '<pre>' . print_r($userInfo, true) . '</pre>';
             update_option('open_oauth_debug', false);
             exit;
@@ -161,8 +161,6 @@ class Controller
         do_action('wp_login', $user->user_login, $user);
 
         wp_redirect(home_url());
-
-        $this->success('login successful');
     }
 
     /**
