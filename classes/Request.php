@@ -15,12 +15,12 @@ class Request
 
     final public static function getQueryParameter(string $key)
     {
-        return $_GET[$key];
+        return $_GET[$key] ?? null;
     }
 
     final public static function getPostParameter(string $key)
     {
-        return $_POST[$key];
+        return $_POST[$key] ?? null;
     }
 
     final public static function getPostParameters(): array
