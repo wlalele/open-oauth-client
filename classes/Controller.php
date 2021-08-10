@@ -40,7 +40,7 @@ class Controller
             $code
         );
 
-        $accessToken = $token['access_token'];
+        $accessToken = $token['access_token'] ?? null;
 
         if (!isset($accessToken)) {
             return;
