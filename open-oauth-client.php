@@ -42,8 +42,9 @@ if (!class_exists('open_oauth_client')) {
             $action = Request::getPostParameter('action');
             $configurationNonce = Request::getPostParameter('configuration_nonce');
             $attributesNonce = Request::getPostParameter('attributes_nonce');
+            $isLoggedIn = is_user_logged_in();
 
-            if ('sso' === $auth) {
+            if (!$isLoggedIn && 'sso' === $auth) {
                 $controller->getAuthorization();
             }
 
