@@ -38,13 +38,14 @@ if (!class_exists('open_oauth_client')) {
         {
             $controller = new Controller();
             $auth = Request::getQueryParameter('auth');
+            $debug = (bool) Request::getQueryParameter('debug');
             $code = Request::getQueryParameter('code');
             $action = Request::getPostParameter('action');
             $configurationNonce = Request::getPostParameter('configuration_nonce');
             $attributesNonce = Request::getPostParameter('attributes_nonce');
             $isLoggedIn = is_user_logged_in();
 
-            if (!$isLoggedIn && 'sso' === $auth) {
+            if ('sso' === $auth && (true === $debug || !$isLoggedIn)) {
                 $controller->getAuthorization();
             }
 
