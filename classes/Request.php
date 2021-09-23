@@ -27,4 +27,9 @@ class Request
     {
         return $_POST;
     }
+
+    final public static function getUri(): string
+    {
+        return $_SERVER['REQUEST_URI'];
+    }
 }

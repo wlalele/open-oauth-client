@@ -34,6 +34,12 @@ if (!class_exists('open_oauth_client')) {
             );
         }
 
+        final private function startsWith($haystack, $needle)
+        {
+            $length = strlen($needle);
+            return substr($haystack, 0, $length) === $needle;
+        }
+
         final public function router(): void
         {
             $controller = new Controller();
@@ -44,8 +50,10 @@ if (!class_exists('open_oauth_client')) {
             $configurationNonce = Request::getPostParameter('configuration_nonce');
             $attributesNonce = Request::getPostParameter('attributes_nonce');
             $isLoggedIn = is_user_logged_in();
+            $forceAuth = get_option('open_oauth_force_auth', false);
+            $isLoginPage = $this->startsWith(Request::getUri(), '/wp-login');
 
-            if ('sso' === $auth && (true === $debug || !$isLoggedIn)) {
+            if (($forceAuth || 'sso' === $auth) && (true === $debug || !$isLoggedIn) && !isset($code) && !$isLoginPage) {
                 $controller->getAuthorization();
             }
 

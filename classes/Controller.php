@@ -87,6 +87,7 @@ class Controller
             'open_oauth_authorization_endpoint' => 'authorization_endpoint',
             'open_oauth_token_endpoint' => 'token_endpoint',
             'open_oauth_userinfo_endpoint' => 'userinfo_endpoint',
+            'open_oauth_force_auth' => 'force_auth',
         ];
 
         $this->updateOptions($configurationOptions);
@@ -114,7 +115,7 @@ class Controller
     {
         $post = Request::getPostParameters();
 
-        foreach($options as $option => $fieldName) {
+        foreach ($options as $option => $fieldName) {
             update_option($option, isset($post[$fieldName]) ? sanitize_text_field($post[$fieldName]) : '');
         }
     }

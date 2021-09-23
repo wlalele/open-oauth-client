@@ -11,6 +11,7 @@ function layout()
         ['key' => 'authorization_endpoint', 'type' => 'text', 'optionName' => 'open_oauth_authorization_endpoint', 'label' => 'Authorization Endpoint', 'placeholder' => 'Set server authorization endpoint'],
         ['key' => 'token_endpoint', 'type' => 'text', 'optionName' => 'open_oauth_token_endpoint', 'label' => 'Token Endpoint', 'placeholder' => 'Set server token endpoint'],
         ['key' => 'userinfo_endpoint', 'type' => 'text', 'optionName' => 'open_oauth_userinfo_endpoint', 'label' => 'UserInfo Endpoint', 'placeholder' => 'Set server userinfo endpoint'],
+        ['key' => 'force_auth', 'type' => 'checkbox', 'optionName' => 'open_oauth_force_auth', 'label' => 'Force Authentication'],
     ];
 
     $attributesInputs = [
@@ -18,7 +19,7 @@ function layout()
         ['key' => 'user_email', 'type' => 'text', 'optionName' => 'open_oauth_user_email', 'label' => 'User Email', 'placeholder' => 'Enter the user email attribute received'],
     ];
 
-    ?>
+?>
 
     <div class="wrap">
         <h2>Open OAuth Client</h2>
@@ -37,14 +38,11 @@ function layout()
                                     </label>
                                 </td>
                                 <td>
-                                    <input
-                                        id="<?php echo $input['key']; ?>"
-                                        name="<?php echo $input['key']; ?>"
-                                        type="<?php echo $input['type']; ?>"
-                                        style="width: 15rem;"
-                                        placeholder="<?php echo $input['placeholder']; ?>"
-                                        value="<?php echo esc_attr(get_option($input['optionName'])); ?>"
-                                    />
+                                    <?php if ($input['type'] === 'checkbox') { ?>
+                                        <input id="<?php echo $input['key']; ?>" name="<?php echo $input['key']; ?>" type="<?php echo $input['type']; ?>" <?php echo esc_attr(get_option($input['optionName'])) === 'on' ? 'checked' : ''  ?> />
+                                    <?php } else { ?>
+                                        <input id="<?php echo $input['key']; ?>" name="<?php echo $input['key']; ?>" type="<?php echo $input['type']; ?>" style="width: 15rem;" placeholder="<?php echo $input['placeholder']; ?>" value="<?php echo esc_attr(get_option($input['optionName'])); ?>" />
+                                    <?php } ?>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -78,14 +76,11 @@ function layout()
                                     </label>
                                 </td>
                                 <td>
-                                    <input
-                                        id="<?php echo $input['key']; ?>"
-                                        name="<?php echo $input['key']; ?>"
-                                        type="<?php echo $input['type']; ?>"
-                                        style="width: 15rem;"
-                                        placeholder="<?php echo $input['placeholder']; ?>"
-                                        value="<?php echo esc_attr(get_option($input['optionName'])); ?>"
-                                    />
+                                    <?php if ($input['type'] === 'checkbox') { ?>
+                                        <input id="<?php echo $input['key']; ?>" name="<?php echo $input['key']; ?>" type="<?php echo $input['type']; ?>" <?php echo esc_attr(get_option($input['optionName'])) === 'on' ? 'checked' : ''  ?> />
+                                    <?php } else { ?>
+                                        <input id="<?php echo $input['key']; ?>" name="<?php echo $input['key']; ?>" type="<?php echo $input['type']; ?>" style="width: 15rem;" placeholder="<?php echo $input['placeholder']; ?>" value="<?php echo esc_attr(get_option($input['optionName'])); ?>" />
+                                    <?php } ?>
                                 </td>
                             </tr>
                         <?php } ?>
