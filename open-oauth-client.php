@@ -4,7 +4,7 @@ Plugin Name: Open OAuth Client
 Plugin URI: https://github.com/wlalele/open-oauth-client
 Description: Just a simple oauth client for wordpress
 Author: Amine Dai
-Version: 0.1.2
+Version: 0.1.3
 Author URI: https://github.com/wlalele
 License: GPLv2
 Text Domain: open-oauth-client
