@@ -131,15 +131,15 @@ class Controller
         $providerUserEmail = $providerUserInfo[get_option('open_oauth_user_email')];
         $providerUserName = $providerUserInfo[get_option('open_oauth_user_name')];
 
-        $userId = $this->findUserIdByEmail($providerUserEmail);
-
         $userInfo = [];
         $userInfo['first_name'] = $providerUserName;
         $userInfo['user_email'] = $providerUserEmail;
-        $userInfo['user_pass'] = wp_generate_password(12, false);
         $userInfo['user_login'] = $providerUserName;
 
+        $userId = $this->findUserIdByEmail($providerUserEmail);
+
         if (!$userId) {
+            $userInfo['user_pass'] = wp_generate_password(12, false);
             return wp_insert_user($userInfo);
         }
 
