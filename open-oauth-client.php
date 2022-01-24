@@ -2,9 +2,9 @@
 /*
 Plugin Name: Open OAuth Client
 Plugin URI: https://github.com/wlalele/open-oauth-client
-Description: Just a simple oauth client for wordpress
+Description: Just a simple oauth client for Wordpress
 Author: Amine Dai
-Version: 0.1.4
+Version: 0.1.5
 Author URI: https://github.com/wlalele
 License: GPLv2
 Text Domain: open-oauth-client
@@ -43,30 +43,48 @@ if (!class_exists('open_oauth_client')) {
         final public function router(): void
         {
             $controller = new Controller();
-            $auth = Request::getQueryParameter('auth');
-            $debug = (bool) Request::getQueryParameter('debug');
-            $code = Request::getQueryParameter('code');
             $action = Request::getPostParameter('action');
             $configurationNonce = Request::getPostParameter('configuration_nonce');
             $attributesNonce = Request::getPostParameter('attributes_nonce');
+
+            if (isset($action, $configurationNonce) && 'configuration' === $action && !empty($configurationNonce)) {
+                $controller->postConfiguration();
+                return;
+            }
+
+            if (isset($action, $attributesNonce) && 'attributes' === $action && !empty($attributesNonce)) {
+                $controller->postAttributes();
+                return;
+            }
+
+            $auth = Request::getQueryParameter('auth');
+            $debug = (bool) Request::getQueryParameter('debug');
+            $code = Request::getQueryParameter('code');
             $isLoggedIn = is_user_logged_in();
             $forceAuth = get_option('open_oauth_force_auth', false);
             $isLoginPage = $this->startsWith(Request::getUri(), '/wp-login');
 
             if (($forceAuth || 'sso' === $auth) && (true === $debug || !$isLoggedIn) && !isset($code) && !$isLoginPage) {
                 $controller->getAuthorization();
+                return;
             }
 
             if (isset($code)) {
-                $controller->processLogin($code);
-            }
+                $userInfo = $controller->retrieveUserInfo($code);
 
-            if (isset($action, $configurationNonce) && 'configuration' === $action && !empty($configurationNonce)) {
-                $controller->postConfiguration();
-            }
+                if ($userInfo && '1' === get_option('open_oauth_debug')) {
+                    echo '<pre>' . print_r($userInfo, true) . '</pre>';
+                    update_option('open_oauth_debug', false);
+                    exit;
+                }
 
-            if (isset($action, $attributesNonce) && 'attributes' === $action && !empty($attributesNonce)) {
-                $controller->postAttributes();
+                if ($userInfo) {
+                    $controller->processLogin($userInfo);
+                } else {
+                    // cannot log with given code
+                    // try to re-fetch authorization from server
+                    $controller->getAuthorization();
+                }
             }
         }
     }
