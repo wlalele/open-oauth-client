@@ -32,4 +32,9 @@ class Request
     {
         return $_SERVER['REQUEST_URI'];
     }
+
+    final public static function getMethod(): string
+    {
+        return $_SERVER['REQUEST_METHOD'];
+    }
 }

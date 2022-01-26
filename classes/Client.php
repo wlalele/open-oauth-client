@@ -9,18 +9,16 @@ class Client
      */
     public static function getAuthorization(): void
     {
-        $authUrl = get_option('open_oauth_authorization_endpoint');
-        $clientId = get_option('open_oauth_client_id');
-        $scope = get_option('open_oauth_client_scope');
-        $redirectUri = get_option('open_oauth_redirect_uri');
+        $baseUrl = get_option('open_oauth_authorization_endpoint');
+        $queryParams = [
+            'client_id' => get_option('open_oauth_client_id'),
+            'scope' => get_option('open_oauth_client_scope'),
+            'redirect_uri' => get_option('open_oauth_redirect_uri'),
+            'response_type' => 'code',
+            'state' => base64_encode(get_option('open_oauth_app_name')),
+        ];
 
-        $authorizationUrl = $authUrl . "?client_id=" . $clientId . "&scope=" . rawurlencode($scope) . "&redirect_uri=" . $redirectUri . "&response_type=code";
-
-        if (session_id() === '') {
-            session_start();
-        }
-
-        header('Location: ' . $authorizationUrl);
+        header('Location: ' . $baseUrl . '?' . http_build_query($queryParams));
         exit;
     }
 
@@ -33,6 +31,7 @@ class Client
      * @param string $clientSecret
      * @param string $code
      * @param string $grantType
+     * @param string $scope
      * @return array
      */
     public static function getToken(
@@ -41,16 +40,18 @@ class Client
         string $clientId,
         string $clientSecret,
         string $code,
-        string $grantType = 'authorization_code'
+        string $grantType = 'authorization_code',
+        string $scope = 'openid profile'
     ): array {
         $authorization = base64_encode("$clientId:$clientSecret");
         $content = sprintf(
-            'client_id=%s&client_secret=%s&grant_type=%s&code=%s&redirect_uri=%s',
+            'client_id=%s&client_secret=%s&code=%s&redirect_uri=%s&grant_type=%s&scope=%s',
             $clientId,
             $clientSecret,
-            $grantType,
             $code,
-            $redirectUri
+            $redirectUri,
+            $grantType,
+            rawurlencode($scope)
         );
 
         $response = wp_remote_post(

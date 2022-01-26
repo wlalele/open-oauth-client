@@ -16,56 +16,55 @@ class Controller
      */
     final public function getAuthorization(): void
     {
-        $debug = Request::getQueryParameter('debug');
-        update_option('open_oauth_debug', true === (bool) $debug);
+        $debug = (bool) Request::getQueryParameter('debug');
+        update_option('open_oauth_debug', true === $debug);
 
         Client::getAuthorization();
     }
 
     /**
-     * Get token, then fetches user information with it
+     * Get access token from code
      * @param string $code
      * @return array|null
      */
-    final public function retrieveUserInfo(string $code): ?array
+    final public function retrieveAccessToken(string $code): ?array
     {
-        $token = Client::getToken(
+        return Client::getToken(
             get_option('open_oauth_token_endpoint'),
             get_option('open_oauth_redirect_uri'),
             get_option('open_oauth_client_id'),
             get_option('open_oauth_client_secret'),
             $code
         );
+    }
 
-        $accessToken = $token['access_token'] ?? null;
-
-        if (!isset($accessToken)) {
-            return null;
-        }
-
-        $userInfo = Client::getUserInfo(
+    /**
+     * Get user information with access token
+     * @param string $accessToken
+     * @return array|null
+     */
+    final public function retrieveUserInfo(string $accessToken): ?array
+    {
+        return Client::getUserInfo(
             get_option('open_oauth_userinfo_endpoint'),
             $accessToken
         );
+    }
 
-        if (!isset($userInfo) || !$userInfo) {
-            return null;
+    final public function getReferrerUrl(): string
+    {
+        $url = home_url();
+        if (isset($_COOKIE['open_oauth_referrer'])) {
+            $url = home_url() . $_COOKIE['open_oauth_referrer'];
+            setcookie('open_oauth_referrer', '', time() - 3600);
         }
 
-        if (isset($userInfo['error_description'])) {
-            return null;
-        }
-
-        if (isset($userInfo['error'])) {
-            return null;
-        }
-
-        return $userInfo;
+        return $url;
     }
 
     /**
      * Process Login Action
-     * Create or update wordpress user with given userInfo
+     * Create or update WordPress user with given userInfo
      * Lastly, log the user that has been created/updated
      *
      * @param array $userInfo
@@ -74,6 +73,9 @@ class Controller
     {
         $userId = $this->createOrUpdateUser($userInfo);
         $this->loginUser($userId);
+
+        header('Location: ' . $this->getReferrerUrl());
+        exit;
     }
 
     /**
@@ -102,8 +104,11 @@ class Controller
     final public function postAttributes(): void
     {
         $attributesOptions = [
-            'open_oauth_user_name' => 'user_name',
+            'open_oauth_user_uid' => 'user_uid',
             'open_oauth_user_email' => 'user_email',
+            'open_oauth_user_name' => 'user_name',
+            'open_oauth_user_family_name' => 'user_family_name',
+            'open_oauth_user_display_name' => 'user_display_name',
         ];
 
         $this->updateOptions($attributesOptions);
@@ -175,8 +180,6 @@ class Controller
         $user = get_user_by('ID', $userId);
 
         do_action('wp_login', $user->user_login, $user);
-
-        wp_redirect(home_url());
     }
 
     /**

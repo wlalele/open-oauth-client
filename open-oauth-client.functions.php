@@ -15,8 +15,11 @@ function layout()
     ];
 
     $attributesInputs = [
-        ['key' => 'user_name', 'type' => 'text', 'optionName' => 'open_oauth_user_name', 'label' => 'User Name', 'placeholder' => 'Enter the user name attribute received'],
+        ['key' => 'user_uid', 'type' => 'text', 'optionName' => 'open_oauth_user_uid', 'label' => 'User Uid', 'placeholder' => 'Enter the user uid'],
         ['key' => 'user_email', 'type' => 'text', 'optionName' => 'open_oauth_user_email', 'label' => 'User Email', 'placeholder' => 'Enter the user email attribute received'],
+        ['key' => 'user_name', 'type' => 'text', 'optionName' => 'open_oauth_user_name', 'label' => 'User Name', 'placeholder' => 'Enter the user name attribute received'],
+        ['key' => 'user_family_name', 'type' => 'text', 'optionName' => 'open_oauth_user_family_name', 'label' => 'User Family Name', 'placeholder' => 'Enter the user family name attribute received'],
+        ['key' => 'user_display_name', 'type' => 'text', 'optionName' => 'open_oauth_user_display_name', 'label' => 'User Display Name', 'placeholder' => 'Enter the user display name attribute received'],
     ];
 
 ?>
