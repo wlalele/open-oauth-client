@@ -13,6 +13,7 @@ Text Domain: open-oauth-client
 require_once 'open-oauth-client.functions.php';
 require_once 'classes/Controller.php';
 require_once 'classes/Request.php';
+require_once 'classes/Session.php';
 
 if (!class_exists('open_oauth_client')) {
     class open_oauth_client
@@ -124,9 +125,11 @@ if (!class_exists('open_oauth_client')) {
                 return;
             }
 
-            // save referrer in cookies and
+            // save referrer in session and
             // get authorization (fetch token from provider)
-            setcookie('open_oauth_referrer', Request::getUri(), time() + 86400); // 86400 = 1 day
+            Session::start();
+            Session::set(Session::REFERRER_NAME, Request::getUri());
+
             $this->controller->getAuthorization();
         }
     }

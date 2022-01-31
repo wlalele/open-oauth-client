@@ -2,10 +2,11 @@
 
 require_once 'Client.php';
 require_once 'Request.php';
+require_once 'Session.php';
 
 /**
  * Main controller
- * Containing all the actions that can be runned by the plugin
+ * Containing all the actions that can be run by the plugin
  *
  * @todo move wordpress actions elsewhere
  */
@@ -53,10 +54,12 @@ class Controller
 
     final public function getReferrerUrl(): string
     {
-        $url = home_url();
-        if (isset($_COOKIE['open_oauth_referrer'])) {
-            $url = home_url() . $_COOKIE['open_oauth_referrer'];
-            setcookie('open_oauth_referrer', '', time() - 3600);
+        $url = home_url() . '?no-ref';
+
+        Session::start();
+        if (Session::has(Session::REFERRER_NAME)) {
+            $url = home_url() . Session::get(Session::REFERRER_NAME);
+            Session::unset();
         }
 
         return $url;
