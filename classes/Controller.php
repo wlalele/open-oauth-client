@@ -152,8 +152,18 @@ class Controller
         $userInfo['last_name'] = $providerUserFamilyName;
         $userInfo['display_name'] = $providerUserDisplayName;
 
-        $userId = $this->findUserIdByEmail($providerUserEmail);
+        // try to find userId with same uid
+        $userId = $this->findUserIdBy('user_login', $providerUserUid);
+        // @todo
+        // we might want to get rid of that search by email
+        // i keep it for consistency and backwards compatibility
+        if (!$userId) {
+            // if not found, try with the email address
+            $userId = $this->findUserIdBy('user_email', $providerUserEmail);
+        }
 
+        // if we really cannot find a user in database
+        // perform the user creation process
         if (!$userId) {
             $userInfo['user_pass'] = wp_generate_password(12, false);
             $userIdentifier = wp_insert_user($userInfo);
@@ -186,18 +196,19 @@ class Controller
     }
 
     /**
-     * Find user ID by email in wordpress database.
+     * Find user ID by key with value in wordpress database.
      *
-     * @param string $email
+     * @param string $key
+     * @param string $value
      * @return string|null
      */
-    private function findUserIdByEmail(string $email): ?string
+    private function findUserIdBy(string $key, string $value): ?string
     {
         global $wpdb;
 
         $query = $wpdb->prepare(
-            "SELECT ID FROM $wpdb->users WHERE user_email = %s;",
-            $email
+            "SELECT ID FROM $wpdb->users WHERE $key = %s;",
+            $value
         );
 
         $userId = $wpdb->get_var($query);
